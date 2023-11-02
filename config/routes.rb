@@ -1,12 +1,41 @@
+
+
+
 Rails.application.routes.draw do
+  resources :auths, only: [:create]
   resources :kinds
-  resources :contacts
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  scope module: 'v1' do
+    resources :contacts, :constraints => lambda { |request| request.params[:version] == "1" } do
+      resource :kind, only: [:show]
+      resource :kind, only: [:show], path: 'relationships/kind'
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+      resource :phones, only: [:show]
+      resource :phones, only: [:show], path: 'relationships/phones'
+
+      resource :phone, only: [:update, :create, :destroy]
+      resource :phone, only: [:update, :create, :destroy], path: 'relationships/phones'
+
+      resource :address, only: [:show, :update, :create, :destroy]
+      resource :address, only: [:show, :update, :create, :destroy], path: 'relationships/address'
+    end
+  end
+
+  scope module: 'v2' do
+    resources :contacts, :constraints => lambda { |request| request.params[:version] == "2" } do
+      resource :kind, only: [:show]
+      resource :kind, only: [:show], path: 'relationships/kind'
+
+      resource :phones, only: [:show]
+      resource :phones, only: [:show], path: 'relationships/phones'
+
+      resource :phone, only: [:update, :create, :destroy]
+      resource :phone, only: [:update, :create, :destroy], path: 'relationships/phones'
+
+      resource :address, only: [:show, :update, :create, :destroy]
+      resource :address, only: [:show, :update, :create, :destroy], path: 'relationships/address'
+    end
+  end
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end
